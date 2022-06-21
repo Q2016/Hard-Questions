@@ -26,3 +26,37 @@ We drive to position 10, expending 10 liters of fuel.  We refuel from 0 liters t
 Then, we drive from position 10 to position 60 (expending 50 liters of fuel),
 and refuel from 10 liters to 50 liters of gas.  We then drive to and reach the target.
 We made 2 refueling stops along the way, so we return 2.  
+
+
+
+Solution:
+Approach 1: Dynamic Programming
+
+Similarity to the knapsack?  
+
+Intuition
+
+Let's determine dp[i], the farthest location we can get to using i refueling stops. This is motivated by the fact that we want the smallest i 
+for which dp[i] >= target.
+
+Algorithm
+
+Let's update dp as we consider each station in order. With no stations, clearly we can get a maximum distance of startFuel with 0 refueling stops.
+
+Now let's look at the update step. When adding a station station[i] = (location, capacity), any time we could reach this station with t refueling stops, 
+we can now reach capacity further with t+1 refueling stops.
+
+For example, if we could reach a distance of 15 with 1 refueling stop, and now we added a station at location 10 with 30 liters of fuel, 
+then we could potentially reach a distance of 45 with 2 refueling stops.  
+
+class Solution(object):
+    def minRefuelStops(self, target, startFuel, stations):
+        dp = [startFuel] + [0] * len(stations)
+        for i, (location, capacity) in enumerate(stations):
+            for t in xrange(i, -1, -1):
+                if dp[t] >= location:
+                    dp[t+1] = max(dp[t+1], dp[t] + capacity)
+
+        for i, d in enumerate(dp):
+            if d >= target: return i
+        return -1
